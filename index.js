@@ -6,10 +6,14 @@ dotenv.config();
 //ACTIVACIÓN DE EXPRESS
 const app = express();
 
-app.use(router);
 
 // Directorio Público
 app.use(express.static('public'));
+
+//Lectura y parseo del body
+app.use(express.json());
+
+app.use(router);
 
 //CONFIGURACIÓN DE SERVIDOR
 app.listen({ port: process.env.PORT || 4000 }, () => {

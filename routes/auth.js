@@ -1,14 +1,14 @@
 // Rutas de usuarios/auth
 // host + /api/auth
-
 import { Router } from 'express';
+import { crearUsuario, loginUsuario, revalidarToken } from '../controllers/auth.js';
 
 const router = Router();
 
-router.get('/api/auth', (req, res) => {
-    res.json({
-        ok: true
-    });
-});
+router.post('/api/auth/new', crearUsuario);
+
+router.post('/api/auth/', loginUsuario);
+
+router.get('/api/auth/renew', revalidarToken);
 
 export default router;
