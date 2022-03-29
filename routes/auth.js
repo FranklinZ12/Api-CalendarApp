@@ -4,6 +4,7 @@ import { Router } from 'express';
 import { crearUsuario, loginUsuario, revalidarToken } from '../controllers/auth.js';
 import { check } from 'express-validator';
 import validarCampos from '../middlewares/validar-campos.js';
+import validarJWT from '../middlewares/validar-jwt.js';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.post('/api/auth/',
     ],
     loginUsuario);
 
-router.get('/api/auth/renew', revalidarToken);
+router.get('/api/auth/renew', validarJWT, revalidarToken);
+
 
 export default router;
