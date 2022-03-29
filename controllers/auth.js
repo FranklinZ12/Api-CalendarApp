@@ -1,25 +1,79 @@
 import { response } from "express";
+import { ModeloUsuario } from "../models/Usuario.js";
+import bcrypt from 'bcryptjs';
+import { generarJWT } from "../helpers/jwt.js";
 
-const crearUsuario = (req, res = response) => {
-    const { name, email, password } = req.body;
-    res.status(201).json({
-        ok: true,
-        msg: 'registro',
-        name,
-        email,
-        password
-    });
+const crearUsuario = async (req, res = response) => {
+    const { email, password } = req.body;
+    try {
+        let usuario = await ModeloUsuario.findOne({ email });
+        if (usuario) {
+            return res.status(400).json({
+                ok: false,
+                msg: `Usuario existente con el correo ${email}`
+            });
+        }
+        usuario = new ModeloUsuario(req.body);
+
+        //Encriptar contraseña
+        const salt = bcrypt.genSaltSync();
+        usuario.password = bcrypt.hashSync(password, salt);
+
+        await usuario.save();
+
+        //Generar JWT
+        const token = await generarJWT(usuario.id, usuario.name);
+        res.status(201).json({
+            ok: true,
+            uid: usuario._id,
+            name: usuario.name,
+            token: token,
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: 'Por favor, verifique los datos',
+        });
+    }
 }
 
-const loginUsuario = (req, res = response) => {
+const loginUsuario = async (req, res = response) => {
     const { email, password } = req.body;
+    try {
+        const usuario = await ModeloUsuario.findOne({ email });
+        if (!usuario) {
+            return res.status(400).json({
+                ok: false,
+                msg: `Usuario no existente con el correo ${email}`
+            });
+        };
 
-    res.status(202).json({
-        ok: true,
-        msg: 'login',
-        email,
-        password
-    });
+        //confirmar los passwords
+        const validPassword = bcrypt.compareSync(password, usuario.password);
+        if (!validPassword) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Contraseña incorrecta'
+            });
+        };
+
+        //Generar JWT
+        const token = await generarJWT(usuario.id, usuario.name);
+
+        res.json({
+            ok: true,
+            uid: usuario._id,
+            name: usuario.name,
+            token: token
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: 'Por favor, verifique los datos',
+        });
+    }
 }
 
 const revalidarToken = (req, res = response) => {
