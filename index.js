@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import router from './routes/auth.js';
 import dbConnection from './database/config.js';
 import cors from "cors";
+import routerEvent from './routes/events.js';
 
 //VARIABLES DE ENTORNO
 dotenv.config();
@@ -23,6 +24,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.use(router);
+
+app.use(routerEvent)
 
 
 
