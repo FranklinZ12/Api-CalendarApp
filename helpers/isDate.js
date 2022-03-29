@@ -6,6 +6,7 @@ const isDate = (date) => {
     }
 
     const fecha = moment(date);
+
     if (fecha.isValid()) {
         return true;
     } else {
