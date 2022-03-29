@@ -1,11 +1,16 @@
 import express from 'express';
 import dotenv from "dotenv";
 import router from './routes/auth.js';
+import dbConnection from './database/config.js';
+
 //VARIABLES DE ENTORNO
 dotenv.config();
+
 //ACTIVACIÓN DE EXPRESS
 const app = express();
 
+//Base de datos
+dbConnection();
 
 // Directorio Público
 app.use(express.static('public'));
