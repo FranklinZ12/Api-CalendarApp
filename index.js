@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 import router from './routes/auth.js';
 import dbConnection from './database/config.js';
+import cors from "cors";
 
 //VARIABLES DE ENTORNO
 dotenv.config();
@@ -12,6 +13,9 @@ const app = express();
 //Base de datos
 dbConnection();
 
+//ACTIVACIÓN DE CORS
+app.use(cors());
+
 // Directorio Público
 app.use(express.static('public'));
 
@@ -19,6 +23,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.use(router);
+
+
 
 //CONFIGURACIÓN DE SERVIDOR
 app.listen({ port: process.env.PORT || 4000 }, () => {
